@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<table class="table">
+    <tbody>
+    {% for column in columns %}
+    <tr>
+        <th scope="row">{{ column.title }}</th>
+        <td>{{ column.number }}</td>
+        <td>
+            <form action="{{ url_for('change_column', column_name=column.title) }}" method="POST">
+                <input class="form-control" type="text" name="new_column_name">
+                <button type="submit" class="btn btn-link rounded-pill px-3">Изменить</button>
+            </form>
+        </td>
+        <td>
+            <form action="{{ url_for('change_column', column_name=column.title) }}" method="POST">
+                <input class="form-control" type="text" name="new_column_name">
+                <button type="submit" class="btn btn-link rounded-pill px-3">Объеденить</button>
+            </form>
+        </td>
+        <td><a class="text-danger" href="{{ url_for('delete_column', column_name=column.title) }}">Удалить</a></td>
+        <td><a class="nav-item" href="{{ url_for('values', column_name=column.title) }}">Подробнее</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row p-4 pe-lg-20 pt-lg-10 align-items-center rounded-5 border shadow-lg">
+    <div class="container">
+        <form action="{{ url_for('uploaded_files') }}" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-6">
+                    <h2>Загрузите файлы santehnika-tut и santehnika-ru</h2>
+                    <input class="form-control form-control-lg" multiple="" id="formFileLg1" name="file"
+                           type="file">
+                    <div class="d-grid gap-2 col-5 mx-auto">
+                        <button style="margin-top: 20px" class="btn btn-primary" type="submit">Объеденить и
+                            начать работу
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<table class="table">
+    <tbody>
+    <h1>{{ column_name }}</h1>
+    {% for value in values %}
+    <tr>
+        <th scope="row">{{ value.title }}</th>
+        <td>{{ value.number }}</td>
+        <td>
+            <form action="{{ url_for('values', column_name=column_name, old_value=value.title) }}" method="POST">
+                <input class="form-control" type="text" name="new_value">
+                <button type="submit" class="btn btn-link rounded-pill px-3">Изменить</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
