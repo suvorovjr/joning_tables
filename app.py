@@ -80,11 +80,12 @@ def change_column(column_name):
         return redirect(url_for('columns'))
 
 
-@app.route('/values/<column_name>', methods=['GET', 'POST'])
-def values(column_name, old_value=None):
+@app.route('/values/<column_name>/', methods=['GET', 'POST'])
+def values(column_name):
     df_manager = get_df_manager()
     df_manager.get_data()
     if request.method == 'POST':
+        old_value = request.form['hidden_field']
         new_value = request.form['new_value']
         df_manager.change_value(column_name=column_name, old_value=old_value, new_value=new_value)
         df_manager.save_db()
@@ -93,6 +94,8 @@ def values(column_name, old_value=None):
     elif request.method == 'GET':
         unique_values = df_manager.get_unique_values(column_name)
         return render_template('values.html', column_name=column_name, values=unique_values)
+
+
 
 
 if __name__ == '__main__':

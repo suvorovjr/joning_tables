@@ -76,7 +76,7 @@ class DFManager:
         :param new_value: Новое значение
         :return: None
         """
-        print(column_name, old_value, new_value)
+
         self.general_df[column_name].replace(old_value, new_value, inplace=True)
 
     def change_column_name(self, old_column_name, new_column_name):
@@ -106,12 +106,3 @@ class DFManager:
 
         self.general_df[main_column] = self.general_df[main_column].fillna(self.general_df[second_column])
         self.general_df.drop(second_column, axis=1, inplace=True)
-
-    def print_dataframe(self):
-        print(self.df_tut)
-        print(self.df_ru)
-        print([column for column in self.df_tut.columns])
-        print([column for column in self.df_ru.columns])
-        print(self.general_df)
-        print([column for column in self.general_df.columns])
-        print(self.general_df.loc[0])
