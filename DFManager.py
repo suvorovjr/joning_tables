@@ -21,20 +21,25 @@ class DFManager:
         self.general_df = None
 
     def get_data(self):
+        """
+
+        :return:
+        """
+
         conn = sqlite3.connect(f'{self.db_name}.db')
         query = "SELECT * FROM products_pandas;"
         self.general_df = pd.read_sql_query(query, conn)
         conn.close()
 
     def save_db(self):
+        """
+
+        :return:
+        """
+
         conn = sqlite3.connect(f'{self.db_name}.db')
         self.general_df.to_sql('products_pandas', conn, if_exists='replace', index=False)
         conn.close()
-
-    def merge_files(self):
-        self.df_tut.drop_duplicates(subset=['Артикул'], keep='first', inplace=True)
-        self.df_ru.drop_duplicates(subset=['Артикул'], keep='first', inplace=True)
-        self.general_df = pd.merge(self.df_tut, self.df_ru, on='Артикул', how='outer', suffixes=('_tut', '_ru'))
 
     def get_all_columns(self):
         """
@@ -46,6 +51,42 @@ class DFManager:
         for i, column in enumerate(self.general_df.columns, start=1):
             all_columns.append({"title": column, "number": i})
         return all_columns
+
+    def merge_columns(self, main_column, second_column):
+        """
+        Объединяет два столбца. После чего удаляет столбец-донор
+        :param main_column: Основной столбец
+        :param second_column: Столбец-донор
+        :return: None
+        """
+
+        self.general_df[main_column] = self.general_df[main_column].fillna(self.general_df[second_column])
+        self.general_df.drop(second_column, axis=1, inplace=True)
+
+    def join_columns(self):
+        """
+        Объединяет колонки с одинаковым названием отдавая приоритет сантехнике тут
+        :return: None
+        """
+
+        all_columns = self.get_all_columns()
+        for column in all_columns:
+            if '_' in column['title']:
+                title_split = ''.join(column['title'].split('_')[0].split(':')[0])
+                website = ''.join(column['title'].split('_')[-1].lower().split(':')[0])
+                if website == 'tut':
+                    self.merge_columns(column['title'], f'{title_split}_ru')
+
+    def merge_files(self):
+        """
+
+        :return:
+        """
+
+        self.df_tut.drop_duplicates(subset=['Артикул'], keep='first', inplace=True)
+        self.df_ru.drop_duplicates(subset=['Артикул'], keep='first', inplace=True)
+        self.general_df = pd.merge(self.df_tut, self.df_ru, on='Артикул', how='outer', suffixes=('_tut', '_ru'))
+        self.join_columns()
 
     def get_unique_values(self, column_name):
         """
@@ -86,6 +127,7 @@ class DFManager:
         :param new_column_name: Новое имя столбца
         :return:
         """
+
         self.general_df.rename(columns={old_column_name: new_column_name}, inplace=True)
 
     def save_to_csv(self):
@@ -95,14 +137,3 @@ class DFManager:
         """
 
         self.general_df.to_csv(self.filename, index=False)
-
-    def merge_columns(self, main_column, second_column):
-        """
-        Объединяет два столбца. После чего удаляет столбец-донор
-        :param main_column: Основной столбец
-        :param second_column: Столбец-донор
-        :return: None
-        """
-
-        self.general_df[main_column] = self.general_df[main_column].fillna(self.general_df[second_column])
-        self.general_df.drop(second_column, axis=1, inplace=True)

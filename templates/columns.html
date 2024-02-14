@@ -6,6 +6,7 @@
     <tr>
         <th scope="row">{{ column.title }}</th>
         <td>{{ column.number }}</td>
+        <td><a class="nav-item" href="{{ url_for('change_dimensional', column_name=column.title) }}">Относится к размерам</a></td>
         <td>
             <form action="{{ url_for('change_column', column_name=column.title) }}" method="POST">
                 <input class="form-control" type="text" name="new_column_name">
@@ -13,8 +14,8 @@
             </form>
         </td>
         <td>
-            <form action="{{ url_for('change_column', column_name=column.title) }}" method="POST">
-                <input class="form-control" type="text" name="new_column_name">
+            <form action="{{ url_for('merge_column', main_column=column.title) }}" method="POST">
+                <input class="form-control" type="text" name="second_column">
                 <button type="submit" class="btn btn-link rounded-pill px-3">Объеденить</button>
             </form>
         </td>

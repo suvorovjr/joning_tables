@@ -1,6 +1,6 @@
 import glob
 from DFManager import DFManager
-from flask import Flask, render_template, request, url_for, redirect, g
+from flask import Flask, render_template, request, url_for, redirect, g, send_file
 from pathlib import Path
 import os
 
@@ -82,20 +82,58 @@ def change_column(column_name):
 
 @app.route('/values/<column_name>/', methods=['GET', 'POST'])
 def values(column_name):
-    df_manager = get_df_manager()
-    df_manager.get_data()
     if request.method == 'POST':
         old_value = request.form['hidden_field']
         new_value = request.form['new_value']
-        df_manager.change_value(column_name=column_name, old_value=old_value, new_value=new_value)
-        df_manager.save_db()
-        unique_values = df_manager.get_unique_values(column_name)
-        return render_template('values.html', values=unique_values)
+        return redirect(url_for('change_value', column_name=column_name, old_value=old_value, new_value=new_value))
     elif request.method == 'GET':
+        df_manager = get_df_manager()
+        df_manager.get_data()
         unique_values = df_manager.get_unique_values(column_name)
         return render_template('values.html', column_name=column_name, values=unique_values)
 
 
+@app.route('/change_value/<column_name>/<old_value>/<new_value>')
+def change_value(column_name, old_value, new_value):
+    df_manager = get_df_manager()
+    df_manager.get_data()
+    df_manager.change_value(column_name=column_name, old_value=old_value, new_value=new_value)
+    df_manager.save_db()
+    return redirect(url_for('values', column_name=column_name))
+
+
+@app.route('/merge_column/<main_column>/', methods=['POST'])
+def merge_column(main_column):
+    if request.method == 'POST':
+        df_manager = get_df_manager()
+        df_manager.get_data()
+        second_column = request.form['second_column']
+        df_manager.merge_columns(main_column=main_column, second_column=second_column)
+        df_manager.save_db()
+        return redirect(url_for('columns'))
+
+
+@app.route('/download/')
+def download():
+    df_manager = get_df_manager()
+    df_manager.get_data()
+    df_manager.save_to_csv()
+    return send_file(df_manager.filename)
+
+
+@app.route('/change_dimensional/<column_name>')
+def change_dimensional(column_name):
+    df_manager = get_df_manager()
+    df_manager.get_data()
+    unique_values = df_manager.get_unique_values(column_name)
+    print(unique_values)
+    for value in unique_values:
+        if value['title']:
+            if 'мм' in value.get('title'):
+                new_value = str(int(value['title'].split(' ')[0]) / 10)
+                df_manager.change_value(column_name=column_name, old_value=value['title'], new_value=new_value)
+    df_manager.save_db()
+    return redirect(url_for('columns'))
 
 
 if __name__ == '__main__':
