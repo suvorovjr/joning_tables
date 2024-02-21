@@ -126,12 +126,25 @@ def change_dimensional(column_name):
     df_manager = get_df_manager()
     df_manager.get_data()
     unique_values = df_manager.get_unique_values(column_name)
-    print(unique_values)
     for value in unique_values:
         if value['title']:
             if 'мм' in value.get('title'):
                 new_value = str(int(value['title'].split(' ')[0]) / 10)
                 df_manager.change_value(column_name=column_name, old_value=value['title'], new_value=new_value)
+    df_manager.save_db()
+    return redirect(url_for('columns'))
+
+
+@app.route('/value_capitalize/<column_name>')
+def value_capitalize(column_name):
+    df_manager = get_df_manager()
+    df_manager.get_data()
+    unique_values = df_manager.get_unique_values(column_name)
+    for value in unique_values:
+        if value['title']:
+            if not value['title'][0].isupper():
+                df_manager.change_value(column_name=column_name, old_value=value['title'],
+                                        new_value=value['title'].capitalize())
     df_manager.save_db()
     return redirect(url_for('columns'))
 
