@@ -1,8 +1,11 @@
 version: '3'
-
 services:
-  app:
-    build: .
-    command: flask --app app run
+  flask:
+    build: ./backend
+    container_name: backend-flask
+    restart: on-failure
+    volumes:
+      - ./backend:/backend
     ports:
-      - '5000:5000'
+      - "5000:5000"
+    command: python app.py

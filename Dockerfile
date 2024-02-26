@@ -1,9 +1,11 @@
-FROM python:3
+FROM python:3.10
 
-WORKDIR /app
+WORKDIR /backend
 
-COPY ./requirements.txt .
+COPY requirements.txt /backend
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
-COPY . .
+COPY . /backend
+
+EXPOSE 5000
