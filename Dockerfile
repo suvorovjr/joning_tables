@@ -1,11 +1,11 @@
 FROM python:3.10
 
-WORKDIR /backend
+WORKDIR /code
 
-COPY requirements.txt /backend
+COPY ./requirements.txt /code/
 
 RUN pip3 install -r requirements.txt
 
-COPY . /backend
+COPY . /code/
 
 EXPOSE 5000
