@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    command: flask --app app run
+    ports:
+      - '8000:8000'
