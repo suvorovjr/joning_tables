@@ -1,9 +1,9 @@
 version: '3'
 services:
-  flask:
+  web:
     build: .
-    container_name: backend-flask
-    restart: on-failure
     ports:
       - "5000:5000"
-    command: python app.py
+    volumes:
+      - .:/app
+    command: flask run --host=0.0.0.0

@@ -1,11 +1,11 @@
 FROM python:3.10
 
-WORKDIR /code
+WORKDIR /app
 
-COPY ./requirements.txt /code/
+COPY . /app
 
-RUN pip3 install -r requirements.txt
-
-COPY . /code/
+RUN pip install -r requirements.txt
 
 EXPOSE 5000
+
+ENV FLASK_APP=app.py
