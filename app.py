@@ -38,6 +38,7 @@ def uploaded_files():
         csv_file_ru = ''.join(glob.glob('*ru.csv'))
         if len(files) == 2 and csv_file_tut and csv_file_ru:
             df_manager = DFManager(csv_file_tut, csv_file_ru)
+            df_manager.delete_colons()
             df_manager.merge_files()
             df_manager.save_db()
             return redirect(url_for('columns'))
@@ -150,4 +151,4 @@ def value_capitalize(column_name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)

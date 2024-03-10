@@ -2,6 +2,7 @@
 {% block content %}
 <h1>{{ column_name }}</h1>
 <a class="btn btn-link" href="{{ url_for('columns') }}">Назад</a>
+<a class="btn btn-link" href="{{ url_for('download') }}">Завершить работу и скачать результат</a>
 <table class="table">
     <tbody>
     {% for value in values %}
@@ -19,5 +20,5 @@
     {% endfor %}
     </tbody>
 </table>
-<a class="btn btn-link" href="{{ url_for('download') }}">Завершить работу и скачать результат</a>
+
 {% endblock %}

@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
+<a class="btn btn-link" href="{{ url_for('uploaded_files') }}">Назад</a>
+<a class="btn btn-link" href="{{ url_for('download') }}">Завершить работу и скачать результат</a>
 <table class="table">
     <tbody>
     {% for column in columns %}
     <tr>
         <th scope="row">{{ column.title }}</th>
         <td>{{ column.number }}</td>
-        <td><a class="nav-item" href="{{ url_for('change_dimensional', column_name=column.title) }}">Поменять величину</a></td>
+        <td><a class="nav-item" href="{{ url_for('change_dimensional', column_name=column.title) }}">Поменять
+            величину</a></td>
         <td><a class="nav-item" href="{{ url_for('value_capitalize', column_name=column.title) }}">Заглавные</a></td>
         <td>
             <form action="{{ url_for('change_column', column_name=column.title) }}" method="POST">

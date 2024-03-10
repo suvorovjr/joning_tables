@@ -20,10 +20,27 @@ class DFManager:
         self.df_ru = pd.read_csv(csv_file_ru, delimiter=';')
         self.general_df = None
 
-    def get_data(self):
+    def delete_colons(self):
+        """
+        Удаляет из обоих датафреймов символ ":"
+        :return: None
         """
 
-        :return:
+        columns_tut = self.df_tut.columns.tolist()
+        columns_ru = self.df_ru.columns.tolist()
+        for column_name in columns_tut:
+            if ':' in column_name:
+                new_column_name = column_name.replace(':', '')
+                self.df_tut.rename(columns={column_name: new_column_name}, inplace=True)
+        for column_name in columns_ru:
+            if ':' in column_name:
+                new_column_name = column_name.replace(':', '')
+                self.df_ru.rename(columns={column_name: new_column_name}, inplace=True)
+
+    def get_data(self):
+        """
+        Получает данные из БД и переводит их в датафрейм
+        :return: None
         """
 
         conn = sqlite3.connect(f'{self.db_name}.db')
@@ -33,8 +50,8 @@ class DFManager:
 
     def save_db(self):
         """
-
-        :return:
+        Сохраняет датафрейм в таблицу SQLLite
+        :return: None
         """
 
         conn = sqlite3.connect(f'{self.db_name}.db')
@@ -60,7 +77,7 @@ class DFManager:
         :return: None
         """
 
-        self.general_df[main_column] = self.general_df[main_column].fillna(self.general_df[second_column])
+        self.general_df[main_column].fillna(self.general_df[second_column], inplace=True)
         self.general_df.drop(second_column, axis=1, inplace=True)
 
     def join_columns(self):
@@ -74,7 +91,8 @@ class DFManager:
             if '_' in column['title']:
                 title_split = ''.join(column['title'].split('_')[0].split(':')[0])
                 website = ''.join(column['title'].split('_')[-1].lower().split(':')[0])
-                if website == 'tut':
+                if website == 'tut' and f'{title_split}_ru' in self.general_df:
+                    print(f'Соединил {title_split}')
                     self.merge_columns(column['title'], f'{title_split}_ru')
 
     def merge_files(self):
@@ -86,7 +104,10 @@ class DFManager:
         self.df_tut.drop_duplicates(subset=['Артикул'], keep='first', inplace=True)
         self.df_ru.drop_duplicates(subset=['Артикул'], keep='first', inplace=True)
         self.general_df = pd.merge(self.df_tut, self.df_ru, on='Артикул', how='outer', suffixes=('_tut', '_ru'))
+        self.general_df = self.general_df.T.drop_duplicates().T
         self.join_columns()
+        duplicated_columns = self.general_df.columns[self.general_df.columns.duplicated()].tolist()
+        self.general_df = self.general_df.loc[:, ~self.general_df.columns.duplicated()]
 
     def get_unique_values(self, column_name):
         """
