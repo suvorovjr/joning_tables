@@ -6,6 +6,7 @@ import os
 
 UPLOAD_FOLDER = Path(__file__).parent
 ALLOWED_EXTENSIONS = ['csv']
+DATABASE = 'database'
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -22,7 +23,7 @@ def get_df_manager():
     csv_file_ru = ''.join(glob.glob('*ru.csv'))
     if 'df_manager' not in g:
         # Создаем экземпляр кастомного класса, если его нет в контексте g
-        g.df_manager = DFManager(csv_file_tut, csv_file_ru)
+        g.df_manager = DFManager(csv_file_tut, csv_file_ru, DATABASE)
     return g.df_manager
 
 
@@ -37,7 +38,7 @@ def uploaded_files():
         csv_file_tut = ''.join(glob.glob('*tut.csv'))
         csv_file_ru = ''.join(glob.glob('*ru.csv'))
         if len(files) == 2 and csv_file_tut and csv_file_ru:
-            df_manager = DFManager(csv_file_tut, csv_file_ru)
+            df_manager = DFManager(csv_file_tut, csv_file_ru, DATABASE)
             df_manager.delete_colons()
             df_manager.merge_files()
             df_manager.save_db()
@@ -45,14 +46,19 @@ def uploaded_files():
         else:
             return render_template('error.html')
     else:
-        return render_template('upload.html')
+        if os.path.exists(f'{DATABASE}.db') or len(glob.glob('*.csv')):
+            text = 'Необходимо либо продолжить работу в сессии, либо ее завершить'
+            show_button = False
+        else:
+            text = 'Загрузите файлы santehnika-tut и santehnika-ru'
+            show_button = True
+        return render_template('upload.html', text=text, show_button=show_button)
 
 
 @app.route('/columns/', methods=['GET', 'POST'])
 def columns(column_name=None):
     if request.method == 'POST':
         new_column_name = request.form['new_column_name']
-        print(new_column_name, column_name)
         return redirect(url_for('change_column', column_name=column_name, new_column_name=new_column_name))
     elif request.method == 'GET':
         df_manager = get_df_manager()
@@ -150,5 +156,15 @@ def value_capitalize(column_name):
     return redirect(url_for('columns'))
 
 
+@app.route('/complete/')
+def complete():
+    if os.path.exists(f'{DATABASE}.db'):
+        os.remove(f'{DATABASE}.db')
+    csv_files = glob.glob('*.csv')
+    for csv_file in csv_files:
+        os.remove(csv_file)
+    return redirect(url_for('uploaded_files'))
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', debug=True)

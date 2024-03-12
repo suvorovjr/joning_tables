@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Error</h1>
+<h1 class="text-center">Некорректные файлы. Ошибка</h1>
+<div class="form-row text-center">
+    <div class="col-12">
+        <a href="{{ url_for('complete') }}" class="btn btn-outline-danger">Завершить работу</a>
+    </div>
+</div>
 {% endblock %}

@@ -7,15 +7,16 @@ class DFManager:
     Класс для работы с csv-файлами с помощью pandas
     """
 
-    def __init__(self, csv_file_tut, csv_file_ru):
+    def __init__(self, csv_file_tut, csv_file_ru, db_name):
         """
         Инициализатор класса
         :param csv_file_tut: Путь к csv файлу с сайта santehnika-tut
         :param csv_file_ru: Путь к csv файлу с сайта santehnika.ru
+        :param db_name: Название базы данных
         """
 
         self.filename = f'merge_{csv_file_tut.split("_")[0]}.csv'
-        self.db_name = csv_file_tut.split("_")[0]
+        self.db_name = db_name
         self.df_tut = pd.read_csv(csv_file_tut, delimiter=';')
         self.df_ru = pd.read_csv(csv_file_ru, delimiter=';')
         self.general_df = None

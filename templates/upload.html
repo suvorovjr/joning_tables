@@ -5,7 +5,8 @@
         <form action="{{ url_for('uploaded_files') }}" method="POST" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-6">
-                    <h2>Загрузите файлы santehnika-tut и santehnika-ru</h2>
+                    <h2>{{ text }}</h2>
+                    {% if show_button %}
                     <input class="form-control form-control-lg" multiple="" id="formFileLg1" name="file"
                            type="file">
                     <div class="d-grid gap-2 col-5 mx-auto">
@@ -13,10 +14,14 @@
                             начать работу
                         </button>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </form>
-        <a href="{{ url_for('columns') }}" class="btn btn-outline-success float-end">Продолжть работу</a>
+        {% if not show_button %}
+            <a href="{{ url_for('columns') }}" class="btn btn-outline-success float-end ms-3">Продолжть работу</a>
+            <a href="{{ url_for('complete') }}" class="btn btn-outline-danger float-end">Завершить работу</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
