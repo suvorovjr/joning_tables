@@ -18,7 +18,7 @@ class DFManager:
         self.filename = f'merge_{csv_file_tut.split("_")[0]}.csv'
         self.db_name = db_name
         self.df_tut = pd.read_csv(csv_file_tut, delimiter=';')
-        self.df_ru = pd.read_csv(csv_file_ru, delimiter=';')
+        self.df_ru = pd.read_csv(csv_file_ru, delimiter=';', on_bad_lines='skip')
         self.general_df = None
 
     def delete_colons(self):
